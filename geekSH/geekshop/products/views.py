@@ -12,7 +12,7 @@ def index(request):
 def products(request):
 	content = {"date": datetime.datetime.now().strftime("%d %B %Y")}
 
-	with open("products/data.json", "r", encoding="utf-8") as file:
+	with open("products/fixtures/data.json", "r", encoding="utf-8") as file:
 		content.update({"goods": json.load(file)})
 	for i in content["goods"]:
 		i["url"] = STATIC_URL + i["url"]
