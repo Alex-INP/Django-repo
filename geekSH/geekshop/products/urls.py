@@ -25,3 +25,5 @@ urlpatterns = [
     path("", products, name="index"),
 ]
 
+
+
