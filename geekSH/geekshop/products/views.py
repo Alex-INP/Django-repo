@@ -1,7 +1,7 @@
 from django.shortcuts import render
+
 import datetime
-import json
-from geekshop.settings import STATIC_URL
+from .models import ProductCategory, Product
 # Create your views here.
 
 
@@ -11,9 +11,15 @@ def index(request):
 
 def products(request):
 	content = {"date": datetime.datetime.now().strftime("%d %B %Y")}
+	content["category_names"] = list(reversed([i.name for i in ProductCategory.objects.all()]))
+	goods_list = []
+	for i in Product.objects.all():
+		goods_list.append({
+		"name": i.name,
+		"image": i.image,
+		"description": i.description,
+		"price": i.price
+		})
+	content["goods"] = goods_list
 
-	with open("products/data.json", "r", encoding="utf-8") as file:
-		content.update({"goods": json.load(file)})
-	for i in content["goods"]:
-		i["url"] = STATIC_URL + i["url"]
 	return render(request, "products.html", content)
