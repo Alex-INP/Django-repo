@@ -45,6 +45,7 @@ def profile(request):
 		profile_form = UserProfileForm(data=request.POST, files=request.FILES, instance=request.user)
 		if profile_form.is_valid():
 			profile_form.save()
+			messages.success(request, "Изменения внесены")
 			return HttpResponseRedirect(reverse('users:profile'))
 	else:
 		profile_form = UserProfileForm(instance=request.user)
