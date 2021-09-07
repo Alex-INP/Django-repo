@@ -50,4 +50,6 @@ def profile(request):
 		profile_form = UserProfileForm(instance=request.user)
 		context["baskets"] = Basket.objects.filter(user=request.user)
 	context["form"] = profile_form
+	context["basket_count"] = Basket.general_quantity(request.user)
+	context["total_cost"] = Basket.total_cost(request.user)
 	return render(request, "users/profile.html", context)
