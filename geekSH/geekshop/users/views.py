@@ -3,6 +3,8 @@ from django.contrib import auth, messages
 from django.urls import reverse
 
 from .forms import UserLoginForm, CreationForm, UserProfileForm
+from baskets.models import Basket
+
 # Create your views here.
 
 def login(request):
@@ -46,5 +48,6 @@ def profile(request):
 			return HttpResponseRedirect(reverse('users:profile'))
 	else:
 		profile_form = UserProfileForm(instance=request.user)
+		context["baskets"] = Basket.objects.filter(user=request.user)
 	context["form"] = profile_form
 	return render(request, "users/profile.html", context)
