@@ -19,13 +19,13 @@ class Basket(models.Model):
 
 	def general_quantity(self):
 		total_count = 0
-		for basket in Basket.objects.filter(user=self):
+		for basket in Basket.objects.filter(user=self.user):
 			total_count += basket.quantity
 		return total_count
 
 	def total_cost(self):
 		total_sum = 0
-		for basket in Basket.objects.filter(user=self):
+		for basket in Basket.objects.filter(user=self.user):
 			total_sum += basket.sum()
 		return total_sum
 
