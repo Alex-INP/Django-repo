@@ -1,6 +1,7 @@
 from django.shortcuts import render, HttpResponseRedirect
 from django.contrib import auth, messages
 from django.urls import reverse
+from django.contrib.auth.decorators import login_required
 
 from .forms import UserLoginForm, CreationForm, UserProfileForm
 from baskets.models import Basket
@@ -39,6 +40,7 @@ def logout(request):
 	auth.logout(request)
 	return HttpResponseRedirect(reverse("index"))
 
+@login_required
 def profile(request):
 	context = {"title": "GeekShop - профиль"}
 	if request.method == "POST":
@@ -51,6 +53,4 @@ def profile(request):
 		profile_form = UserProfileForm(instance=request.user)
 		context["baskets"] = Basket.objects.filter(user=request.user)
 	context["form"] = profile_form
-	context["basket_count"] = Basket.general_quantity(request.user)
-	context["total_cost"] = Basket.total_cost(request.user)
 	return render(request, "users/profile.html", context)
