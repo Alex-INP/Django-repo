@@ -1,9 +1,10 @@
 from django.shortcuts import render, HttpResponseRedirect
 from django.urls import reverse
 from django.contrib.auth.decorators import user_passes_test
+from django.contrib import messages
 
 from users.models import NormalUser
-from .forms import UserRegisterForm_Admin, UserUpdateForm_Admin, ProductCategoryForm_Admin
+from .forms import UserRegisterForm_Admin, UserUpdateForm_Admin, ProductCategoryForm_Admin, ProductForm_Admin
 from products.models import ProductCategory, Product
 
 # Create your views here.
@@ -94,3 +95,47 @@ def admin_category_delete(request, id):
 	current_category = ProductCategory.objects.get(id=id)
 	current_category.delete()
 	return HttpResponseRedirect(reverse("admins:admin_category_show"))
+
+# -------------
+
+@user_passes_test(lambda u: u.is_staff)
+def admin_product_show(request):
+	all_products = Product.objects.all()
+	context = {"title": "Продукты",
+			   "products_data": all_products}
+	return render(request, "admins/admin-products-show.html", context)
+
+@user_passes_test(lambda u: u.is_staff)
+def admin_product_create(request):
+	context = {"title": "Создание продукта"}
+	if request.method == "POST":
+		form = ProductForm_Admin(data=request.POST, files=request.FILES)
+		if form.is_valid():
+			form.save()
+			return HttpResponseRedirect(reverse("admins:admin_product_show"))
+	else:
+		form = ProductForm_Admin()
+	context["form"] = form
+	return render(request, "admins/admin-products-create.html", context)
+
+
+@user_passes_test(lambda u: u.is_staff)
+def admin_product_update(request, id):
+	context = {"title": "Редактирование категории"}
+	current_product = Product.objects.get(id=id)
+	if request.method == "POST":
+		form = ProductForm_Admin(data=request.POST, files=request.FILES, instance=current_product)
+		if form.is_valid():
+			form.save()
+			return HttpResponseRedirect(reverse("admins:admin_product_show"))
+	else:
+		form = ProductForm_Admin(instance=current_product)
+	context["form"] = form
+	context["product"] = current_product
+	return render(request, "admins/admin-products-update-delete.html", context)
+
+@user_passes_test(lambda u: u.is_staff)
+def admin_product_delete(request, id):
+	current_product = Product.objects.get(id=id)
+	current_product.delete()
+	return HttpResponseRedirect(reverse("admins:admin_product_show"))
