@@ -3,7 +3,8 @@ from django.urls import reverse
 from django.contrib.auth.decorators import user_passes_test
 
 from users.models import NormalUser
-from .forms import UserRegisterForm_Admin, UserUpdateForm_Admin
+from .forms import UserRegisterForm_Admin, UserUpdateForm_Admin, ProductCategoryForm_Admin
+from products.models import ProductCategory, Product
 
 # Create your views here.
 
@@ -52,3 +53,44 @@ def admin_users_delete(request, id):
 	user_to_delete.is_active = False
 	user_to_delete.save()
 	return HttpResponseRedirect(reverse('admins:admin_users'))
+
+@user_passes_test(lambda u: u.is_staff)
+def admin_category_show(request):
+	all_categories = ProductCategory.objects.all()
+	categories_count = [len(Product.objects.filter(category=i.id)) for i in all_categories]
+	context = {"title": "Категории",
+			   "categories_data": list(zip(all_categories, categories_count))}
+	return render(request, "admins/admin-category-show.html", context)
+
+@user_passes_test(lambda u: u.is_staff)
+def admin_category_create(request):
+	context = {"title": "Создание категории"}
+	if request.method == "POST":
+		form = ProductCategoryForm_Admin(data=request.POST)
+		if form.is_valid():
+			form.save()
+			return HttpResponseRedirect(reverse("admins:admin_category_show"))
+	else:
+		form = ProductCategoryForm_Admin()
+		context["form"] = form
+		return render(request, "admins/admin-category-create.html", context)
+
+
+@user_passes_test(lambda u: u.is_staff)
+def admin_category_update(request, id):
+	context = {"title": "Редактирование категории"}
+	current_category = ProductCategory.objects.get(id=id)
+	if request.method == "POST":
+		form = ProductCategoryForm_Admin(data=request.POST, instance=current_category)
+		form.save()
+		return HttpResponseRedirect(reverse("admins:admin_category_show"))
+	else:
+		context["form"] = ProductCategoryForm_Admin(instance=current_category)
+		context["category"] = current_category
+		return render(request, "admins/admin-category-update-delete.html", context)
+
+@user_passes_test(lambda u: u.is_staff)
+def admin_category_delete(request, id):
+	current_category = ProductCategory.objects.get(id=id)
+	current_category.delete()
+	return HttpResponseRedirect(reverse("admins:admin_category_show"))
