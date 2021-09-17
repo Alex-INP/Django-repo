@@ -135,14 +135,71 @@ class CategoryDeleteView(DeleteView):
 	template_name = "admins/admin-category-update-delete.html"
 	success_url = reverse_lazy("admins:admin_category_show")
 
-	def delete(self, request, *args, **kwargs):
-		self.object = self.get_object()
-		self.object.delete()
-		return HttpResponseRedirect(self.get_success_url())
-
 	@method_decorator(user_passes_test(lambda u: u.is_staff))
 	def dispatch(self, request, *args, **kwargs):
 		return super(CategoryDeleteView, self).dispatch(request, *args, **kwargs)
+
+# ---------------------------------------Products CBV---------------------------------------
+
+class ProductListView(ListView):
+	model = Product
+	context_object_name = "products_data"
+	template_name = "admins/admin-products-show.html"
+
+	def get_context_data(self, *, object_list=None, **kwargs):
+		context = super(ProductListView, self).get_context_data(**kwargs)
+		context["title"] = "Продукты"
+		return context
+
+	@method_decorator(user_passes_test(lambda u: u.is_staff))
+	def dispatch(self, request, *args, **kwargs):
+		return super(ProductListView, self).dispatch(request, *args, **kwargs)
+
+class ProductCreateView(CreateView):
+	model = Product
+	form_class = ProductForm_Admin
+	context_object_name = "products_data"
+	template_name = "admins/admin-products-create.html"
+	success_url = reverse_lazy("admins:admin_product_show")
+
+	def get_context_data(self, *, object_list=None, **kwargs):
+		context = super(ProductCreateView, self).get_context_data(**kwargs)
+		context["title"] = "Создание продукта"
+		return context
+
+	@method_decorator(user_passes_test(lambda u: u.is_staff))
+	def dispatch(self, request, *args, **kwargs):
+		return super(ProductCreateView, self).dispatch(request, *args, **kwargs)
+
+
+class ProductUpdateView(UpdateView):
+	model = Product
+	context_object_name = "product"
+	form_class = ProductForm_Admin
+	template_name = "admins/admin-products-update-delete.html"
+	success_url = reverse_lazy("admins:admin_product_show")
+
+	def get_context_data(self, *, object_list=None, **kwargs):
+		context = super(ProductUpdateView, self).get_context_data(**kwargs)
+		context["title"] = "Редактирование продукта"
+		return context
+
+	@method_decorator(user_passes_test(lambda u: u.is_staff))
+	def dispatch(self, request, *args, **kwargs):
+		return super(ProductUpdateView, self).dispatch(request, *args, **kwargs)
+
+
+class ProductDeleteView(DeleteView):
+	model = Product
+	context_object_name = "product"
+	template_name = "admins/admin-product-update-delete.html"
+	success_url = reverse_lazy("admins:admin_product_show")
+
+	@method_decorator(user_passes_test(lambda u: u.is_staff))
+	def dispatch(self, request, *args, **kwargs):
+		return super(ProductDeleteView, self).dispatch(request, *args, **kwargs)
+
+# ---------------------------------------Old FBV---------------------------------------
 
 # @user_passes_test(lambda u: u.is_staff)
 # def admin_users(request):
@@ -228,44 +285,44 @@ class CategoryDeleteView(DeleteView):
 
 # -------------
 
-@user_passes_test(lambda u: u.is_staff)
-def admin_product_show(request):
-	all_products = Product.objects.all()
-	context = {"title": "Продукты",
-			   "products_data": all_products}
-	return render(request, "admins/admin-products-show.html", context)
+# @user_passes_test(lambda u: u.is_staff)
+# def admin_product_show(request):
+# 	all_products = Product.objects.all()
+# 	context = {"title": "Продукты",
+# 			   "products_data": all_products}
+# 	return render(request, "admins/admin-products-show.html", context)
 
-@user_passes_test(lambda u: u.is_staff)
-def admin_product_create(request):
-	context = {"title": "Создание продукта"}
-	if request.method == "POST":
-		form = ProductForm_Admin(data=request.POST, files=request.FILES)
-		if form.is_valid():
-			form.save()
-			return HttpResponseRedirect(reverse("admins:admin_product_show"))
-	else:
-		form = ProductForm_Admin()
-	context["form"] = form
-	return render(request, "admins/admin-products-create.html", context)
+# @user_passes_test(lambda u: u.is_staff)
+# def admin_product_create(request):
+# 	context = {"title": "Создание продукта"}
+# 	if request.method == "POST":
+# 		form = ProductForm_Admin(data=request.POST, files=request.FILES)
+# 		if form.is_valid():
+# 			form.save()
+# 			return HttpResponseRedirect(reverse("admins:admin_product_show"))
+# 	else:
+# 		form = ProductForm_Admin()
+# 	context["form"] = form
+# 	return render(request, "admins/admin-products-create.html", context)
 
 
-@user_passes_test(lambda u: u.is_staff)
-def admin_product_update(request, id):
-	context = {"title": "Редактирование категории"}
-	current_product = Product.objects.get(id=id)
-	if request.method == "POST":
-		form = ProductForm_Admin(data=request.POST, files=request.FILES, instance=current_product)
-		if form.is_valid():
-			form.save()
-			return HttpResponseRedirect(reverse("admins:admin_product_show"))
-	else:
-		form = ProductForm_Admin(instance=current_product)
-	context["form"] = form
-	context["product"] = current_product
-	return render(request, "admins/admin-products-update-delete.html", context)
-
-@user_passes_test(lambda u: u.is_staff)
-def admin_product_delete(request, id):
-	current_product = Product.objects.get(id=id)
-	current_product.delete()
-	return HttpResponseRedirect(reverse("admins:admin_product_show"))
+# @user_passes_test(lambda u: u.is_staff)
+# def admin_product_update(request, id):
+# 	context = {"title": "Редактирование категории"}
+# 	current_product = Product.objects.get(id=id)
+# 	if request.method == "POST":
+# 		form = ProductForm_Admin(data=request.POST, files=request.FILES, instance=current_product)
+# 		if form.is_valid():
+# 			form.save()
+# 			return HttpResponseRedirect(reverse("admins:admin_product_show"))
+# 	else:
+# 		form = ProductForm_Admin(instance=current_product)
+# 	context["form"] = form
+# 	context["product"] = current_product
+# 	return render(request, "admins/admin-products-update-delete.html", context)
+#
+# @user_passes_test(lambda u: u.is_staff)
+# def admin_product_delete(request, id):
+# 	current_product = Product.objects.get(id=id)
+# 	current_product.delete()
+# 	return HttpResponseRedirect(reverse("admins:admin_product_show"))

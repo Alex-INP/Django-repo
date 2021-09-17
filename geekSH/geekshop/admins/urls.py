@@ -15,8 +15,8 @@ Including another URLconf
 """
 from django.urls import path
 from admins.views import index, UserListView, UserCreateView, UserUpdateView, UserDeleteView, \
-	CategoryListView, CategoryUpdateView, CategoryCreateView, CategoryDeleteView, admin_product_show, \
-	admin_product_create, admin_product_update, admin_product_delete
+	CategoryListView, CategoryUpdateView, CategoryCreateView, CategoryDeleteView, ProductListView, \
+	ProductCreateView, ProductUpdateView, ProductDeleteView
 
 # from admins.views import index, admin_users, admin_users_create, admin_users_update, admin_users_delete, \
 # 	admin_category_show, admin_category_update, admin_category_create, admin_category_delete, admin_product_show, \
@@ -34,8 +34,8 @@ urlpatterns = [
 	path("category_create/", CategoryCreateView.as_view(), name="admin_category_create"),
 	path("category_update/<int:pk>", CategoryUpdateView.as_view(), name="admin_category_update"),
 	path("category_delete/<int:pk>", CategoryDeleteView.as_view(), name="admin_category_delete"),
-	path("product_show/", admin_product_show, name="admin_product_show"),
-	path("product_create/", admin_product_create, name="admin_product_create"),
-	path("product_update/<int:id>", admin_product_update, name="admin_product_update"),
-	path("product_delete/<int:id>", admin_product_delete, name="admin_product_delete"),
+	path("product_show/", ProductListView.as_view(), name="admin_product_show"),
+	path("product_create/", ProductCreateView.as_view(), name="admin_product_create"),
+	path("product_update/<int:pk>", ProductUpdateView.as_view(), name="admin_product_update"),
+	path("product_delete/<int:pk>", ProductDeleteView.as_view(), name="admin_product_delete"),
 ]

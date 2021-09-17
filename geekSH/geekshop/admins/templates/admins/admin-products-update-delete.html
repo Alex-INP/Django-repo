@@ -24,6 +24,9 @@
                 </div>
             {% endif %}
             <div class="card-body">
+                {% if product.image %}
+                <img src="{{ product.image.url }}" alt="image" style="display: block; margin: auto; height: 600px">
+                {% endif %}
                 <form action="{% url 'admins:admin_product_update' product.id %}" method="post" enctype="multipart/form-data">
                     {% csrf_token %}
                     <div class="form-row">
@@ -69,11 +72,14 @@
                         </div>
                     </div>
                 </form>
-                <div class="row">
-                    <div class="col-lg-12" style="margin-top: 33px;">
-                        <a href="{% url 'admins:admin_product_delete' product.id %}" class="btn btn-danger btn-block">Удалить</a>
+                <form action="{% url 'admins:admin_product_delete' product.pk %}" method="post">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-lg-12" style="margin-top: 33px;">
+                            <input type="submit" class="btn btn-danger btn-block" value="Удалить">
+                        </div>
                     </div>
-                </div>
+                </form>
             </div>
         </div>
     </main>
