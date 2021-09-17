@@ -1,0 +1,64 @@
+{% extends "admins/base.html" %}
+{% load static %}
+
+{% block title %}
+{{ title }}
+{% endblock %}
+
+{% block content %}
+<div id="layoutSidenav_content">
+    <main>
+        <div class="container-fluid">
+            <h1 class="mt-4">Категории товаров</h1>
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-table mr-1"></i>
+                    Категории товаров
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                            <thead>
+                            <tr>
+                                <th>Имя категории</th>
+                                <th>Описание</th>
+                                <th>Количество продуктов в категории</th>
+                            </tr>
+                            </thead>
+                            <tfoot>
+                            <tr>
+                                <th>Имя категории</th>
+                                <th>Описание</th>
+                                <th>Количество продуктов в категории</th>
+                            </tr>
+                            </tfoot>
+                            <tbody>
+                            {% for data in categories_data %}
+                                <tr>
+                                    <td><a href="{% url 'admins:admin_category_update' data.0.id %}" style="color: dodgerblue">{{ data.0.name }}</a></td>
+                                    <td>{{ data.0.description }}</td>
+                                    <td>{{ data.1 }}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <a href="{% url 'admins:admin_category_create' %}">
+                        <button class="btn btn-success">Создать категорию</button>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+    <footer class="py-4 bg-light mt-auto">
+        <div class="container-fluid">
+            <div class="d-flex align-items-center justify-content-between small">
+                <div class="text-muted">Copyright &copy; GeekShop 2021</div>
+            </div>
+        </div>
+    </footer>
+</div>
+{% endblock %}
+
