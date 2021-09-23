@@ -1,4 +1,4 @@
-from django.shortcuts import render, HttpResponseRedirect
+from django.shortcuts import render, HttpResponseRedirect, HttpResponse
 from django.urls import reverse, reverse_lazy
 from django.contrib.auth.decorators import user_passes_test
 from django.utils.decorators import method_decorator
@@ -11,8 +11,12 @@ from products.models import ProductCategory, Product
 
 # Create your views here.
 
+from django.http import JsonResponse
+from django.template.loader import render_to_string
+
 @user_passes_test(lambda u: u.is_staff)
 def index(request):
+	# print("ADMIN INDEX")
 	return render(request, "admins/admin.html")
 
 class UserListView(ListView):
@@ -20,9 +24,19 @@ class UserListView(ListView):
 	context_object_name = "users"
 	template_name = "admins/admin-users-read.html"
 
+	def get(self, request, *args, **kwargs):
+		if request.is_ajax():
+			self.object_list = self.get_queryset()
+			context = self.get_context_data()
+			result = render_to_string("admins/show.html", context)
+			return JsonResponse({"result": result})
+
+
 	def get_context_data(self, *, object_list=None, **kwargs):
 		context = super(UserListView, self).get_context_data(**kwargs)
 		context["title"] = "Администрация"
+		context["inbody_title"] = "Пользователи"
+		context["table_titles"] = ["Имя пользователя", "Имя", "Фамилия", "Адрес эл. почты", "Персонал сайта", "Активный"]
 		return context
 
 	@method_decorator(user_passes_test(lambda u: u.is_staff))
@@ -37,9 +51,28 @@ class UserCreateView(CreateView):
 	template_name = "admins/admin-users-create.html"
 	success_url = reverse_lazy("admins:admin_users")
 
+	def get(self, request, *args, **kwargs):
+		if request.is_ajax():
+			self.object = NormalUser()
+			context = self.get_context_data()
+			result = render_to_string("admins/create-update-user.html", context, request=request)
+			return JsonResponse({"result": result})
+
+	def post(self, request, *args, **kwargs):
+		if request.is_ajax():
+			self.object = None
+			context = self.get_context_data()
+			print(f"{request.POST=}")
+			form = self.form_class(data=request.POST, files=request.FILES)
+			if form.is_valid():
+				form.save()
+			result = render_to_string("admins/show.html", context, request=request)
+			return JsonResponse({"result": result})
+
 	def get_context_data(self, *, object_list=None, **kwargs):
 		context = super(UserCreateView, self).get_context_data(**kwargs)
 		context["title"] = "GeekShop - создание пользователя"
+		context["inbody_title"] = "Создание пользователя"
 		return context
 
 	@method_decorator(user_passes_test(lambda u: u.is_staff))
@@ -54,9 +87,30 @@ class UserUpdateView(UpdateView):
 	template_name = "admins/admin-users-update-delete.html"
 	success_url = reverse_lazy("admins:admin_users")
 
+	def get(self, request, *args, **kwargs):
+		if request.is_ajax():
+			self.object = NormalUser.objects.get(id=self.request.GET['pk'])
+			context = self.get_context_data()
+			result = render_to_string("admins/create-update-user.html", context, request=request)
+			return JsonResponse({"result": result})
+
+	def post(self, request, *args, **kwargs):
+		if request.is_ajax():
+			self.object = NormalUser.objects.get(id=self.request.POST['pk'])
+			print(f"{self.object=}")
+			context = self.get_context_data()
+			form = self.form_class(data=request.POST, files=request.FILES, instance=self.object)
+			if form.is_valid():
+				form.save()
+			result = render_to_string("admins/show.html", context, request=request)
+			return JsonResponse({"result": result})
+		else:
+			print("NOT AJAX")
+
 	def get_context_data(self, *, object_list=None, **kwargs):
 		context = super(UserUpdateView, self).get_context_data(**kwargs)
 		context["title"] = "GeekShop - редактирование пользователя"
+		context["inbody_title"] = "Редактирование пользователя"
 		return context
 
 	@method_decorator(user_passes_test(lambda u: u.is_staff))
@@ -69,11 +123,12 @@ class UserDeleteView(DeleteView):
 	template_name = "admins/admin-users-update-delete.html"
 	success_url = reverse_lazy("admins:admin_users")
 
-	def delete(self, request, *args, **kwargs):
-		self.object = self.get_object()
+	def delete(self, request, pk, **kwargs):
+		print("Delete")
+		self.object = NormalUser.objects.get(id=pk)
 		self.object.is_active = False
-		self.object.save()
-		return HttpResponseRedirect(self.get_success_url())
+		self.object.delete()
+		return render(request, "admins/admin.html")
 
 	@method_decorator(user_passes_test(lambda u: u.is_staff))
 	def dispatch(self, request, *args, **kwargs):
@@ -86,10 +141,19 @@ class CategoryListView(ListView):
 	context_object_name = "categories_data"
 	template_name = "admins/admin-category-show.html"
 
+	def get(self, request, *args, **kwargs):
+		if request.is_ajax():
+			self.object_list = self.get_queryset()
+			context = self.get_context_data()
+			result = render_to_string("admins/show.html", context)
+			return JsonResponse({"result": result})
+
 	def get_context_data(self, *, object_list=None, **kwargs):
 		context = super(CategoryListView, self).get_context_data(**kwargs)
 		context["title"] = "Категории"
 		context["categories_data"] = list(zip(context["object_list"], [len(Product.objects.filter(category=i.pk)) for i in context["object_list"]]))
+		context["inbody_title"] = "Категории товаров"
+		context["table_titles"] = ["Имя категории", "Описание", "Количество продуктов в категории"]
 		return context
 
 	@method_decorator(user_passes_test(lambda u: u.is_staff))
@@ -146,9 +210,20 @@ class ProductListView(ListView):
 	context_object_name = "products_data"
 	template_name = "admins/admin-products-show.html"
 
+	def get(self, request, *args, **kwargs):
+		if request.is_ajax():
+
+			self.object_list = self.get_queryset()
+			context = self.get_context_data()
+			result = render_to_string("admins/show.html", context)
+			return JsonResponse({"result": result})
+
 	def get_context_data(self, *, object_list=None, **kwargs):
 		context = super(ProductListView, self).get_context_data(**kwargs)
 		context["title"] = "Продукты"
+		context["inbody_title"] = "Продукты"
+		context["table_titles"] = ["Наименование", "Описание", "Цена", "Количество", "Изображение",
+								   "Категория"]
 		return context
 
 	@method_decorator(user_passes_test(lambda u: u.is_staff))
