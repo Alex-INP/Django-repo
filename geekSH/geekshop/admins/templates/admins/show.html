@@ -1,0 +1,85 @@
+
+<main>
+    <div class="container-fluid">
+        <h1 class="mt-4">{{ inbody_title }}</h1>
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-table mr-1"></i>
+                {{ inbody_title }}
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+                        <tr>
+                            {% for table_t in table_titles %}
+                            <th>{{ table_t }}</th>
+                            {% endfor %}
+                        </tr>
+                        </thead>
+                        <tfoot>
+                        <tr>
+                            {% for table_t in table_titles %}
+                            <th>{{ table_t }}</th>
+                            {% endfor %}
+                        </tr>
+                        </tfoot>
+                        <tbody>
+                        {% if users %}
+                            {% for user in users %}
+                                <tr>
+                                    <td><a class="ajax_entity_update" user_id={{ user.id }} href="{% url 'admins:admin_users_update' user.id %}" style="color: dodgerblue">{{ user.username }}</a></td>
+                                    <td>{{ user.first_name }}</td>
+                                    <td>{{ user.last_name }}</td>
+                                    <td>{{ user.email }}</td>
+                                    {% if user.is_staff %}
+                                            <td class="text-center"><i class="fas fa-check-circle"></i></td>
+                                        {% else %}
+                                            <td class="text-center"><i class="fas fa-times-circle"></i></td>
+                                    {% endif %}
+                                    {% if user.is_active %}
+                                            <td class="text-center"><i class="fas fa-check-circle"></i></td>
+                                        {% else %}
+                                            <td class="text-center"><i class="fas fa-times-circle"></i></td>
+                                    {% endif %}
+                                </tr>
+                            {% endfor %}
+                        {% elif products_data %}
+                            {% for product in products_data %}
+                                <tr>
+                                    <td><a href="{% url 'admins:admin_product_update' product.id %}" style="color: dodgerblue">{{ product.name }}</a></td>
+                                    <td>{{ product.description }}</td>
+                                    <td>{{ product.price }}</td>
+                                    <td>{{ product.quantity }}</td>
+                                    {% if product.image %}
+                                        <td>Есть</td>
+                                    {% else %}
+                                        <td>Нету</td>
+                                    {% endif %}
+                                    <td>{{ product.category }}</td>
+                                </tr>
+                            {% endfor %}
+                        {% elif categories_data %}
+                            {% for data in categories_data %}
+                                <tr>
+                                    <td><a href="{% url 'admins:admin_category_update' data.0.id %}" style="color: dodgerblue">{{ data.0.name }}</a></td>
+                                    <td>{{ data.0.description }}</td>
+                                    <td>{{ data.1 }}</td>
+                                </tr>
+                            {% endfor %}
+                        {% endif %}
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card-footer">
+<!--                {% url 'admins:admin_users_create' %}-->
+                <a href="#">
+                    <button class="btn btn-success ajax_entity_create">Создать пользователя</button>
+                </a>
+            </div>
+        </div>
+    </div>
+</main>
+

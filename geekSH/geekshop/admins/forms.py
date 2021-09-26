@@ -35,7 +35,7 @@ class ProductForm_Admin(forms.ModelForm):
 	image = forms.ImageField(widget=forms.FileInput(attrs={"class": "custom-file-input"}), required=False)
 	price = forms.DecimalField(widget=forms.TextInput(attrs={"class": "form-control py-4"}), required=False)
 	quantity = forms.IntegerField(widget=forms.TextInput(attrs={"class": "form-control py-4"}))
-	category = forms.ModelChoiceField(widget=forms.Select, queryset=ProductCategory.objects.all())
+	category = forms.ModelChoiceField(widget=forms.Select(attrs={"style": "width: 100%; height: 100%"}), queryset=ProductCategory.objects.all())
 
 	class Meta:
 		model = Product
