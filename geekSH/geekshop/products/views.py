@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 import datetime
 from .models import ProductCategory, Product
@@ -9,9 +10,17 @@ def index(request):
 	content = {"date": datetime.datetime.now().strftime("%d %B %Y")}
 	return render(request, "index.html", content)
 
-def products(request):
+def products(request, id=None, page=1):
 	content = {"date": datetime.datetime.now().strftime("%d %B %Y")}
-	content["category_names"] = ProductCategory.objects.all()
-	content["goods"] = Product.objects.all()
+	products = Product.objects.filter(category=id) if id is not None else Product.objects.all()
+	paginator = Paginator(products, per_page=3)
+	try:
+		products_paginator = paginator.page(page)
+	except PageNotAnInteger:
+		products_paginator = paginator.page(1)
+	except EmptyPage:
+		products_paginator = paginator.page(paginator.num_pages)
 
+	content["goods"] = products_paginator
+	content["categories"] = ProductCategory.objects.all()
 	return render(request, "products.html", content)
