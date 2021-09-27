@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+{{ "geekShop - каталог"|title }}
+{% endblock %}
+
+{% block content %}
+<div style="margin: 100px;">
+    <div style="margin: auto; display: flex; justify-content: center;">
+        <img src="{{ product.image.url }}" style="height: 500px; margin-right: 70px;">
+        <div style="display: flex; flex-direction: column;">
+            <b>{{ product.name }}</b>
+            <div style="margin-top: 20px;">
+                Описание:
+                <br>
+                {{ product.description }}
+            </div>
+            <div style="margin-top: 20px;">
+                Цена: {{ product.price }} р.
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block footer %}
+<footer class="py-5 bg-dark">
+    <div class="container">
+        <p class="m-0 text-center text-white">Copyright &copy; GeekShop 2020</p>
+    </div>
+</footer>
+{% endblock %}

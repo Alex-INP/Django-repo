@@ -13,7 +13,7 @@ class UserProfileForm(UserChangeForm):
 
 	class Meta:
 		model = NormalUser
-		fields = ("username", "email", "first_name", "last_name", "image")
+		fields = ("username", "email", "first_name", "last_name", "image", "age")
 
 class UserLoginForm(AuthenticationForm):
 	username = forms.CharField(widget=forms.TextInput(attrs={"class": "form-control py-4",
@@ -25,18 +25,27 @@ class UserLoginForm(AuthenticationForm):
 		fields = ("username", "password")
 
 class CreationForm(UserCreationForm):
-	username = forms.CharField(widget=forms.TextInput(attrs={"class": "form-control py-4",
-															 "placeholder": "Введите имя пользователя"}))
-	email = forms.CharField(widget=forms.EmailInput(attrs={"class": "form-control py-4",
-															 "placeholder": "Введите почту"}))
-	first_name = forms.CharField(widget=forms.TextInput(attrs={"class": "form-control py-4",
-															 "placeholder": "Введите имя"}))
-	last_name = forms.CharField(widget=forms.TextInput(attrs={"class": "form-control py-4",
-															 "placeholder": "Введите фамилию"}))
-	password1 = forms.CharField(widget=forms.PasswordInput(attrs={"class": "form-control py-4",
-															 "placeholder": "Введите пароль"}))#]), validators=[validate_password])
-	password2 = forms.CharField(widget=forms.PasswordInput(attrs={"class": "form-control py-4",
-															 "placeholder": "Повторите пароль"}))#]), validators=[validate_password])
+	username = forms.CharField(widget=forms.TextInput())
+	email = forms.CharField(widget=forms.EmailInput())
+	first_name = forms.CharField(widget=forms.TextInput())
+	last_name = forms.CharField(widget=forms.TextInput())
+	age = forms.IntegerField(widget=forms.NumberInput())
+	password1 = forms.CharField(widget=forms.PasswordInput()) # , validators=[validate_password])
+	password2 = forms.CharField(widget=forms.PasswordInput()) #, validators=[validate_password])
+
 	class Meta:
 		model = NormalUser
 		fields = ("username", "email", "first_name", "last_name", "password1", "password2")
+
+	def __init__(self, *args, **kwargs):
+		super(CreationForm, self).__init__(*args, **kwargs)
+		self.fields["username"].widget.attrs["placeholder"] = "Введите имя пользователя"
+		self.fields["email"].widget.attrs["placeholder"] = "Введите почту"
+		self.fields["first_name"].widget.attrs["placeholder"] = "Введите имя"
+		self.fields["last_name"].widget.attrs["placeholder"] = "Введите фамилию"
+		self.fields["age"].widget.attrs["placeholder"] = "Введите возраст"
+		self.fields["password1"].widget.attrs["placeholder"] = "Введите пароль"
+		self.fields["password2"].widget.attrs["placeholder"] = "Повторите пароль"
+		for name, field in self.fields.items():
+			field.widget.attrs["class"] = "form-control py-4"
+
