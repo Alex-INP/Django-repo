@@ -16,7 +16,7 @@ Including another URLconf
 
 from django.urls import path
 
-from users.views import login, register, logout, profile
+from users.views import login, register, logout, profile, verify
 
 app_name = "users"
 
@@ -25,6 +25,7 @@ urlpatterns = [
     path("register/", register, name="register"),
     path("logout/", logout, name="logout"),
     path("profile/", profile, name="profile"),
+    path("verify/<str:email>/<str:activation_key>/", verify, name="verify"),
 ]
 
 
