@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.views.generic.detail import DetailView
 
 import datetime
 from .models import ProductCategory, Product
@@ -24,3 +25,10 @@ def products(request, id=None, page=1):
 	content["goods"] = products_paginator
 	content["categories"] = ProductCategory.objects.all()
 	return render(request, "products.html", content)
+
+class DetailProduct(DetailView):
+	context_object_name = "product"
+	template_name = "products/detail-product.html"
+	model = Product
+
+

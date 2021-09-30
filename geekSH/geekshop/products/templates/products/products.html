@@ -74,7 +74,7 @@
                             {% endif %}
                             <div class="card-body">
                                 <h4 class="card-title">
-                                    <a href="#">{{ good.name }}</a>
+                                    <a href="{% url 'products:detail_product' good.pk %}">{{ good.name }}</a>
                                 </h4>
                                 <h5>{{ good.price }} руб.</h5>
                                 <p class="card-text">{{ good.description }}</p>
