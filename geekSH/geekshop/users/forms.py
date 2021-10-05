@@ -4,7 +4,7 @@ import random
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, UserChangeForm
 from django import forms
 
-from .models import NormalUser
+from .models import NormalUser, UserProfile
 from .validators import validate_password
 
 class UserProfileForm(UserChangeForm):
@@ -13,6 +13,7 @@ class UserProfileForm(UserChangeForm):
 	first_name = forms.CharField(widget=forms.TextInput(attrs={"class": "form-control py-4", "placeholder": "Введите имя"}))
 	last_name = forms.CharField(widget=forms.TextInput(attrs={"class": "form-control py-4", "placeholder": "Введите фамилию"}))
 	image = forms.ImageField(widget=forms.FileInput(attrs={"class": "custom-file-input"}), required=False)
+	age = forms.IntegerField(widget=forms.NumberInput(attrs={"class": "form-control py-4"}), required=False)
 
 	class Meta:
 		model = NormalUser
@@ -38,7 +39,7 @@ class CreationForm(UserCreationForm):
 
 	class Meta:
 		model = NormalUser
-		fields = ("username", "email", "first_name", "last_name", "password1", "password2")
+		fields = ("username", "email", "first_name", "last_name", "password1", "password2", "age")
 
 	def __init__(self, *args, **kwargs):
 		super(CreationForm, self).__init__(*args, **kwargs)
@@ -59,3 +60,16 @@ class CreationForm(UserCreationForm):
 		user.activation_key = hashlib.sha1((user.email + salt).encode("utf8")).hexdigest()
 		user.save()
 		return user
+
+class UserProfileEditForm(forms.ModelForm):
+	class Meta:
+		model = UserProfile
+		fields = ("tagline", "gender", "about_me", "lang", "vk_link")
+
+	def __init__(self, *args, **kwargs):
+		super(UserProfileEditForm, self).__init__(*args, **kwargs)
+		for field_name, field in self.fields.items():
+			if field_name != "gender":
+				field.widget.attrs["class"] = "form-control py-4"
+			else:
+				field.widget.attrs["class"] = "form-control"

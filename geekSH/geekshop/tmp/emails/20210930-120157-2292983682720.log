@@ -1,0 +1,14 @@
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: 
+ =?utf-8?b?0JTQu9GPINCw0LrRgtC40LLQsNGG0LjQuCDRg9GH0LXRgtC90L7QuSDQt9Cw0L8=?=
+ =?utf-8?b?0LjRgdC4IFJlZ2lzLCDQv9GA0L7QudC00LjRgtC1INC/0L4g0YHRgdGL0LvQutC1?=
+From: django@gb.local
+To: Regis@mail.ru
+Date: Thu, 30 Sep 2021 09:01:57 -0000
+Message-ID: <163299251728.11792.33477745504658420@DESKTOP-0GMAKRO>
+
+Ссылка для подтверждения учетной записи Regis на портале:
+http://localhost:8000/users/verify/Regis@mail.ru/8b52e8d9c1e8a942f0cbc0759cb998b55624c260/
+-------------------------------------------------------------------------------

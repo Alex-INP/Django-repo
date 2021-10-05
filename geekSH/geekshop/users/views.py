@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
 
-from .forms import UserLoginForm, CreationForm, UserProfileForm
+from .forms import UserLoginForm, CreationForm, UserProfileForm, UserProfileEditForm
 from baskets.models import Basket
 from .models import NormalUser
 from geekshop import settings
@@ -49,14 +49,17 @@ def profile(request):
 	context = {"title": "GeekShop - профиль"}
 	if request.method == "POST":
 		profile_form = UserProfileForm(data=request.POST, files=request.FILES, instance=request.user)
-		if profile_form.is_valid():
+		second_profile_form = UserProfileEditForm(data=request.POST, instance=request.user.userprofile)
+		if profile_form.is_valid() and second_profile_form.is_valid():
 			profile_form.save()
 			messages.success(request, "Изменения внесены")
 			return HttpResponseRedirect(reverse('users:profile'))
 	else:
 		profile_form = UserProfileForm(instance=request.user)
+		second_profile_form = UserProfileEditForm(instance=request.user.userprofile)
 		# context["baskets"] = Basket.objects.filter(user=request.user)
 	context["form"] = profile_form
+	context["second_form"] = second_profile_form
 	return render(request, "users/profile.html", context)
 
 def send_verify_link(user):
