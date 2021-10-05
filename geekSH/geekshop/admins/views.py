@@ -16,7 +16,6 @@ from django.template.loader import render_to_string
 
 @user_passes_test(lambda u: u.is_staff)
 def index(request):
-	# print("ADMIN INDEX")
 	return render(request, "admins/admin.html")
 
 class UserListView(ListView):

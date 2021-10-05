@@ -3,8 +3,6 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
-from products.views import index, products
-
 from ordersapp.views import OrderList, OrderCreate, OrderUpdate, OrderDelete, OrderRead, OrderItemsCreate, order_forming_complete
 from django.urls import re_path
 

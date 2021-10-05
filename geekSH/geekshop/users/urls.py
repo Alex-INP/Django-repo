@@ -16,15 +16,16 @@ Including another URLconf
 
 from django.urls import path
 
-from users.views import login, register, logout, profile, verify
+# from users.views import login, register, logout, profile, verify
+from users.views import LoginView, RegisterView, logout, ProfileView, verify
 
 app_name = "users"
 
 urlpatterns = [
-    path("login/", login, name="login"),
-    path("register/", register, name="register"),
+    path("login/", LoginView.as_view(), name="login"),
+    path("register/", RegisterView.as_view(), name="register"),
     path("logout/", logout, name="logout"),
-    path("profile/", profile, name="profile"),
+    path("profile/", ProfileView.as_view(), name="profile"),
     path("verify/<str:email>/<str:activation_key>/", verify, name="verify"),
 ]
 
