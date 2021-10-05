@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     "users",
     "baskets",
     "admins",
-    "social_django"
+    "social_django",
+    "ordersapp",
 ]
 
 MIDDLEWARE = [
