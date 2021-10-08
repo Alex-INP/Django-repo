@@ -16,15 +16,15 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from products.views import products, DetailProduct
+from products.views import DetailProduct, ProductsShow
 
 app_name = "products"
 
 
 urlpatterns = [
-    path("", products, name="index"),
-    path("category/<int:id>", products, name="category"),
-    path("page/<int:page>", products, name="page"),
+    path("", ProductsShow.as_view(), name="index"),
+    path("category/<int:pk>", ProductsShow.as_view(), name="category"),
+    path("page/<int:page>", ProductsShow.as_view(), name="page"),
     path("detail_product/<int:pk>", DetailProduct.as_view(), name="detail_product")
 ]
 

@@ -10,6 +10,8 @@ from .models import Basket
 
 # Create your views here.
 # @login_required
+
+# ---------With Ajax---------
 def basket_add(request, id):
 	if request.is_ajax() and request.user.is_authenticated:
 		product = Product.objects.get(id=id)
