@@ -2,9 +2,21 @@ from django.db import models
 
 from users.models import NormalUser
 from products.models import Product
+
+
 # Create your models here.
 
+# class BasketQuerySet(models.QuerySet):
+#
+# 	def delete(self, *args, **kwargs):
+# 		for item in self:
+# 			item.product.quantity += item.quantity
+# 			item.product.save()
+# 		super(BasketQuerySet, self).delete(*args, **kwargs)
+
+
 class Basket(models.Model):
+	# objects = BasketQuerySet.as_manager()
 	user = models.ForeignKey(NormalUser, on_delete=models.CASCADE)
 	product = models.ForeignKey(Product, on_delete=models.CASCADE)
 	quantity = models.PositiveIntegerField(default=0)
@@ -29,4 +41,20 @@ class Basket(models.Model):
 			total_sum += basket.sum()
 		return total_sum
 
+	@staticmethod
+	def get_item(pk):
+		return Basket.objects.get(pk=pk).quantity
+
+	# def delete(self, *args, **kwargs):
+	# 	self.product.quantity += self.quantity
+	# 	self.save()
+	# 	super(Basket, self).delete(*args, **kwargs)
+	#
+	# def save(self, *args, **kwargs):
+	# 	if self.pk:
+	# 		self.product.quantity -= self.quantity - self.get_item(self.pk)
+	# 	else:
+	# 		self.product.quantity -= self.quantity
+	# 	self.product.save()
+	# 	super(Basket, self).save(*args, **kwargs)
 

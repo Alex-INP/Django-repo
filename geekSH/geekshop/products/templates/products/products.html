@@ -61,7 +61,7 @@
             </div>
             <div class="prerow_div_ajax">
                 <div class="row">
-                    {% for good in goods %}
+                    {% for good in page_obj %}
 
                     <div class="col-lg-4 col-md-6 mb-4">
                         <div class="card h-100">
@@ -89,25 +89,42 @@
                 </div>
             </div>
 
-            <nav aria-label="Page navigation example">
-                <ul class="pagination justify-content-center">
-                    <li class="page-item {% if not goods.has_previous %} disabled {% endif %}">
-                        <a class="page-link" href="
-                        {% if goods.has_previous %}
-                            {% url 'products:page' goods.previous_page_number %}
-                        {% else %} # {% endif %}" tabindex="-1" aria-disabled="true">Previous</a>
-                    </li>
-                    {% for page in goods.paginator.page_range %}
-                    <li class="page-item"><a class="page-link" href="{% url 'products:page' page %}">{{ page }}</a></li>
-                    {% endfor %}
-                    <li class="page-item {% if not goods.has_next %} disabled {% endif %}">
-                        <a class="page-link" href="
-                        {% if goods.has_next %}
-                            {% url 'products:page' goods.next_page_number %}
-                        {% else %} # {% endif %}">Next</a>
-                    </li>
-                </ul>
-            </nav>
+            <div class="pagination justify-content-center">
+                <span class="step-links">
+                    {% if page_obj.has_previous %}
+                        <a href="?page=1">&laquo; В начало |</a>
+                        <a href="?page={{ page_obj.previous_page_number }}">предидущая</a>
+                    {% endif %}
+
+                    <span class="current">
+                        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                    </span>
+
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}">следующая</a>
+                        <a href="?page={{ page_obj.paginator.num_pages }}">| В конец &raquo;</a>
+                    {% endif %}
+                </span>
+            </div>
+<!--            <nav aria-label="Page navigation example">-->
+<!--                <ul class="pagination justify-content-center">-->
+<!--                    <li class="page-item {% if not goods.has_previous %} disabled {% endif %}">-->
+<!--                        <a class="page-link" href="-->
+<!--                        {% if goods.has_previous %}-->
+<!--                            {% url 'products:page' goods.previous_page_number %}-->
+<!--                        {% else %} # {% endif %}" tabindex="-1" aria-disabled="true">Previous</a>-->
+<!--                    </li>-->
+<!--                    {% for page in goods.paginator.page_range %}-->
+<!--                    <li class="page-item"><a class="page-link" href="{% url 'products:page' page %}">{{ page }}</a></li>-->
+<!--                    {% endfor %}-->
+<!--                    <li class="page-item {% if not goods.has_next %} disabled {% endif %}">-->
+<!--                        <a class="page-link" href="-->
+<!--                        {% if goods.has_next %}-->
+<!--                            {% url 'products:page' goods.next_page_number %}-->
+<!--                        {% else %} # {% endif %}">Next</a>-->
+<!--                    </li>-->
+<!--                </ul>-->
+<!--            </nav>-->
 
         </div>
 
