@@ -8,15 +8,20 @@ from django.db import transaction
 from django.forms import inlineformset_factory
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.views.generic.detail import DetailView
+from django.dispatch import receiver
+from django.db.models.signals import pre_save, pre_delete
+
 from baskets.models import Basket
 from ordersapp.models import Order, OrderItem
 from ordersapp.forms import OrderItemsForm
+
 
 class OrderList(ListView):
 	model = Order
 
 	def get_queryset(self):
 		return Order.objects.filter(user=self.request.user, is_active=True)
+
 
 class OrderCreate(CreateView):
 	model = Order
@@ -75,6 +80,9 @@ class OrderUpdate(UpdateView):
 			formset = OrderFormSet(self.request.POST, instance=self.object)
 		else:
 			formset = OrderFormSet(instance=self.object)
+			for form in formset:
+				if form.instance.pk:
+					form.initial["price"] = form.instance.product.price
 
 		context["orderitems"] = formset
 		return context
@@ -94,9 +102,11 @@ class OrderUpdate(UpdateView):
 
 			return super().form_valid(form)
 
+
 class OrderDelete(DeleteView):
 	model = Order
 	success_url = reverse_lazy("orders:list")
+
 
 class OrderRead(DetailView):
 	model = Order
@@ -110,8 +120,29 @@ class OrderRead(DetailView):
 class OrderItemsCreate(CreateView):
 	pass
 
+
 def order_forming_complete(request, pk):
 	order = get_object_or_404(Order, pk=pk)
 	order.status = order.SENT_TO_PROCEED
 	order.save()
 	return HttpResponseRedirect(reverse("orders:list"))
+
+@receiver(pre_save, sender=OrderItem)
+@receiver(pre_save, sender=Basket)
+def product_quantity_update_delete(sender, instance, **kwargs):
+	if instance.pk:
+		instance.product.quantity -= instance.quantity - instance.get_item(instance.pk)
+	else:
+		instance.product.quantity -= instance.quantity
+	instance.product.save()
+	print("product_quantity_update_SAVE")
+
+@receiver(pre_delete, sender=OrderItem)
+@receiver(pre_delete, sender=Basket)
+def product_quantity_update_delete(sender, instance, **kwargs):
+	instance.product.quantity += instance.quantity
+	instance.product.save()
+	print("product_quantity_update_DELETE")
+
+
+
