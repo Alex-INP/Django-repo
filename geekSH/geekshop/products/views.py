@@ -21,7 +21,9 @@ class ProductsShow(ListView):
 	def get_context_data(self, *, object_list=None, **kwargs):
 		id = self.kwargs["pk"] if "pk" in self.kwargs.keys() else None
 		if id is not None:
-			self.object_list = Product.objects.filter(category=id)
+			self.object_list = Product.objects.filter(category=id).select_related("category")
+		else:
+			self.object_list = Product.objects.all().select_related("category")
 		context = super(ProductsShow, self).get_context_data(**kwargs)
 		context["categories"] = ProductCategory.objects.all()
 		return context
