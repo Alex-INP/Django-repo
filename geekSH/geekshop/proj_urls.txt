@@ -1,0 +1,5 @@
+http://194.58.103.129/
+http://194.58.103.129/users/login/
+http://194.58.103.129/products/
+http://194.58.103.129/users/register/
+http://194.58.103.129/products/category/1
