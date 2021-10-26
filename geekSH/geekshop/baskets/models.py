@@ -35,12 +35,15 @@ class Basket(models.Model):
 	# 	for basket in Basket.objects.filter(user=self.user):
 	# 		total_count += basket.quantity
 	# 	return total_count
-
+	#
 	# def total_cost(self):
 	# 	total_sum = 0
 	# 	for basket in Basket.objects.filter(user=self.user):
 	# 		total_sum += basket.sum()
 	# 	return total_sum
+
+	# def get_total_quantity(self):
+	# 	baskets = self.object.user
 
 	def general_quantity(self):
 		baskets = self.get_items_cached

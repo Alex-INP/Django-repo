@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import user_passes_test
 from django.utils.decorators import method_decorator
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.edit import View
+from django.contrib.auth.views import LoginView
 
 from .forms import UserLoginForm, CreationForm, UserProfileForm, UserProfileEditForm
 from .models import NormalUser
@@ -16,27 +17,43 @@ from geekshop import settings
 
 # Create your views here.
 
-class LoginView(View):
+class LoginListView(LoginView):
 	template_name = "users/login.html"
+	form_class = UserLoginForm
+	success_url = "index"
 
 	def get(self, request, *args, **kwargs):
-		context = self.get_context_data(**kwargs)
-		return render(request, self.template_name, context)
-
-	def post(self, request, *args, **kwargs):
-		login_form = UserLoginForm(data=self.request.POST)
-		if login_form.is_valid():
-			user = auth.authenticate(username=self.request.POST["username"], password=self.request.POST["password"])
-			if user and user.is_active:
-				auth.login(self.request, user)
-				return HttpResponseRedirect(reverse("products:index"))
-		return render(request, "users/login.html", self.get_context_data())
+		sup = super(LoginListView, self).get(request, *args, **kwargs)
+		if request.user.is_authenticated:
+			return HttpResponseRedirect(reverse_lazy(self.success_url))
+		return sup
 
 	def get_context_data(self, *, object_list=None, **kwargs):
-		context = {}
+		context = super(LoginListView, self).get_context_data(**kwargs)
 		context["title"] = "GeekShop - Авторизация"
-		context["form"] = UserLoginForm()
 		return context
+
+# class LoginView(View):
+# 	template_name = "users/login.html"
+#
+# 	def get(self, request, *args, **kwargs):
+# 		context = self.get_context_data(**kwargs)
+# 		return render(request, self.template_name, context)
+#
+# 	def post(self, request, *args, **kwargs):
+# 		login_form = UserLoginForm(data=self.request.POST)
+# 		if login_form.is_valid():
+# 			user = auth.authenticate(username=self.request.POST["username"], password=self.request.POST["password"])
+# 			if user and user.is_active:
+# 				auth.login(self.request, user)
+# 				return HttpResponseRedirect(reverse("products:index"))
+# 		return render(request, "users/login.html", self.get_context_data())
+#
+# 	def get_context_data(self, *, object_list=None, **kwargs):
+# 		context = {}
+# 		context["title"] = "GeekShop - Авторизация"
+# 		context["form"] = UserLoginForm()
+# 		return context
 
 class RegisterView(CreateView):
 	model = NormalUser
@@ -86,7 +103,7 @@ class ProfileView(UpdateView):
 		context["title"] = "GeekShop - профиль"
 		return context
 
-	@method_decorator(user_passes_test(lambda u: u.is_staff))
+	# @method_decorator(user_passes_test(lambda u: u.is_staff))
 	def dispatch(self, request, *args, **kwargs):
 		return super(ProfileView, self).dispatch(request, *args, **kwargs)
 
@@ -109,9 +126,10 @@ def verify(request, email, activation_key):
 			user.activation_key_expires = None
 			user.is_active = True
 			user.save()
-			auth.login(request, user)
+			auth.login(request, user, backend="django.contrib.auth.backends.ModelBackend")
 		return render(request, "users/verification.html")
-	except:
+	except Exception as e:
+		# print(f"EXEPT: {e}")
 		return HttpResponseRedirect(reverse("index"))
 
 # ---------------------------------------Old FBV---------------------------------------

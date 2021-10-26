@@ -6,7 +6,8 @@ from products.models import ProductCategory, Product
 
 
 class UserRegisterForm_Admin(CreationForm):
-	image = forms.ImageField(widget=forms.FileInput(), required=False)
+	image = forms.ImageField(widget=forms.FileInput(),required=False)
+
 
 	class Meta:
 		model = NormalUser
@@ -16,6 +17,7 @@ class UserUpdateForm_Admin(UserProfileForm):
 	username = forms.CharField(widget=forms.TextInput(attrs={"class": "form-control py-4", "readonly": False}))
 	email = forms.EmailField(widget=forms.EmailInput(attrs={"class": "form-control py-4", "readonly": False}))
 
+
 	class Meta:
 		model = NormalUser
 		fields = ("username", "email", "first_name", "last_name", "image")
@@ -23,10 +25,11 @@ class UserUpdateForm_Admin(UserProfileForm):
 class ProductCategoryForm_Admin(forms.ModelForm):
 	name = forms.CharField(widget=forms.TextInput(attrs={"class": "form-control py-4"}))
 	description = forms.CharField(widget=forms.TextInput(attrs={"class": "form-control py-4"}), required=False)
+	discount = forms.IntegerField(widget=forms.NumberInput(), label="скидка", required=False, min_value=0, max_value=90, initial=0)
 
 	class Meta:
 		model = ProductCategory
-		fields = ("name", "description")
+		fields = ("name", "description", "discount")
 
 
 class ProductForm_Admin(forms.ModelForm):
