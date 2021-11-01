@@ -4,6 +4,8 @@ from django.contrib.auth.decorators import user_passes_test
 from django.utils.decorators import method_decorator
 from django.views.generic.list import ListView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.db.models import F
+from django.db import connection
 
 from users.models import NormalUser
 from .forms import UserRegisterForm_Admin, UserUpdateForm_Admin, ProductCategoryForm_Admin, ProductForm_Admin
@@ -13,6 +15,11 @@ from products.models import ProductCategory, Product
 
 from django.http import JsonResponse
 from django.template.loader import render_to_string
+
+def db_profile_by_type(prefix, type, queries):
+   update_queries = list(filter(lambda x: type in x['sql'], queries))
+   print(f'db_profile {type} for {prefix}:')
+   [print(query['sql']) for query in update_queries]
 
 @user_passes_test(lambda u: u.is_staff)
 def index(request):
@@ -133,6 +140,16 @@ class CategoryUpdateView(UpdateView):
 	def dispatch(self, request, *args, **kwargs):
 		return super(CategoryUpdateView, self).dispatch(request, *args, **kwargs)
 
+	def form_valid(self, form):
+		if "discount" in form.cleaned_data:
+			discount = form.cleaned_data["discount"]
+			if discount:
+				# print(f"{discount=} % to {self.object.name}")
+				self.object.product_set.update(price=F("price")*(1-discount/100))
+				# db_profile_by_type(self.__class__, "UPDATE", connection.queries)
+		self.object.save()
+		return HttpResponseRedirect(self.get_success_url())
+
 
 class CategoryDeleteView(DeleteView):
 	model = ProductCategory
@@ -186,8 +203,9 @@ class ProductUpdateView(UpdateView):
 	model = Product
 	context_object_name = "product"
 	form_class = ProductForm_Admin
-	template_name = "admins/admin-products-update-delete.html"
 	success_url = reverse_lazy("admins:admin_product_show")
+	template_name = "admins/admin-products-update-delete.html"
+
 
 	def get_context_data(self, *, object_list=None, **kwargs):
 		context = super(ProductUpdateView, self).get_context_data(**kwargs)

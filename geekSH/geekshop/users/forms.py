@@ -51,7 +51,8 @@ class CreationForm(UserCreationForm):
 		self.fields["password1"].widget.attrs["placeholder"] = "Введите пароль"
 		self.fields["password2"].widget.attrs["placeholder"] = "Повторите пароль"
 		for name, field in self.fields.items():
-			field.widget.attrs["class"] = "form-control py-4"
+			if name != "image":
+				field.widget.attrs["class"] = "form-control py-4"
 	
 	def save(self, commit=True):
 		user = super(CreationForm, self).save()
